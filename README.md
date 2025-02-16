@@ -3,7 +3,7 @@ a Pong game built with Python and Tkinter. It supports single-player mode with a
 # Features
 Single-player & Two-player modes: Play against AI or challenge a friend.
 AI-controlled Paddle: The AI automatically adjusts to the ball's movement.
-Power-ups System:
+ Power-ups System:
 🏓 Increase Paddle Size: Temporarily enlarges the paddle for better defense.
 🐢 Slow Ball: Reduces ball speed for easier control.
 🔥 Score Boost: Grants an instant point to the player who collects it.
