@@ -16,7 +16,7 @@ Player 2 (Right Paddle - in Two-player mode): Up Arrow (Up) | Down Arrow (Down)
 The AI automatically moves the right paddle in Single-player mode.
 # Installation
 -Clone this repository:
-git clone https://github.com/yourusername/pong-ai-powerups.git
+git clone https://github.com/Shriya1985/pong-ai-powerups.git
 cd pong-ai-powerups
 -Run the game:
 python pong.py
