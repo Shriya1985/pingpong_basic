@@ -1,4 +1,3 @@
-import random
 import tkinter as tk
 
 # Initialize the main window
@@ -34,18 +33,6 @@ is_single_player = True  # Default mode
 
 # AI speed
 AI_SPEED = 6
-
-power_up = None
-power_up_active = False
-power_up_effects = {
-    "paddle_size": "Increase Paddle Size",
-    "ball_slow": "Slow Ball",
-    "score_boost": "Score Boost"
-}
-active_power_up = None  # Currently active power-up
-power_up_timer = 0  # Timer for power-up duration
-POWER_UP_DURATION = 5000  # Duration of power-up in milliseconds (5 seconds)
-
 
 # Function to reset the ball
 def reset_ball():
@@ -91,56 +78,9 @@ def move_ai():
         canvas.move(right_paddle, 0, AI_SPEED)
 
 
-def spawn_power_up():
-    global power_up
-    if power_up is not None:  # If a power-up already exists, do nothing
-        return
-
-    power_up_type = random.choice(list(power_up_effects.keys()))  # Randomly select a power-up type
-    x = random.randint(WIDTH // 4, (3 * WIDTH) // 4)  # Random x position
-    y = random.randint(HEIGHT // 4, (3 * HEIGHT) // 4)  # Random y position
-
-    power_up = canvas.create_oval(x, y, x + 20, y + 20, fill="yellow", tags=power_up_type)
-    root.after(random.randint(10000, 20000), spawn_power_up)  # Spawn power-ups periodically
-
-
-# Function to apply a power-up effect
-def apply_power_up(power_up_type):
-    global active_power_up, power_up_timer, ball_dx, ball_dy
-
-    if power_up_type == "paddle_size":
-        canvas.scale(left_paddle, 0, 0, 1, 1.5)  # Increase paddle height
-        canvas.scale(right_paddle, 0, 0, 1, 1.5)
-    elif power_up_type == "ball_slow":
-        ball_dx /= 2
-        ball_dy /= 2
-    elif power_up_type == "score_boost":
-        global left_score, right_score
-        left_score += 1
-        right_score += 1
-
-    active_power_up = power_up_type
-    power_up_timer = POWER_UP_DURATION
-    canvas.delete(power_up)
-    power_up = None
-
-
-# Function to deactivate a power-up
-def deactivate_power_up():
-    global active_power_up, ball_dx, ball_dy
-    if active_power_up == "paddle_size":
-        canvas.scale(left_paddle, 0, 0, 1, 2 / 3)  # Reset paddle size
-        canvas.scale(right_paddle, 0, 0, 1, 2 / 3)
-    elif active_power_up == "ball_slow":
-        ball_dx *= 2
-        ball_dy *= 2
-
-    active_power_up = None
-
-
-# Update move_ball function to include power-up collision detection
+# Function to move the ball
 def move_ball():
-    global ball_dx, ball_dy, left_score, right_score, power_up_timer, active_power_up
+    global ball_dx, ball_dy, left_score, right_score
     canvas.move(ball, ball_dx, ball_dy)
     ball_coords = canvas.coords(ball)
 
@@ -152,16 +92,12 @@ def move_ball():
     if ball_coords[0] <= canvas.coords(left_paddle)[2] and \
             canvas.coords(left_paddle)[1] < ball_coords[3] and \
             canvas.coords(left_paddle)[3] > ball_coords[1]:
-        ball_dx = -ball_dx * 1.1
-        ball_dy = ball_dy * 1.1
-        limit_ball_speed()
+        ball_dx = -ball_dx
 
     if ball_coords[2] >= canvas.coords(right_paddle)[0] and \
             canvas.coords(right_paddle)[1] < ball_coords[3] and \
             canvas.coords(right_paddle)[3] > ball_coords[1]:
-        ball_dx = -ball_dx * 1.1
-        ball_dy = ball_dy * 1.1
-        limit_ball_speed()
+        ball_dx = -ball_dx
 
     # Ball out of bounds
     if ball_coords[0] <= 0:
@@ -171,28 +107,8 @@ def move_ball():
         left_score += 1
         reset_ball()
 
-    # Check for collision with power-up
-    if power_up and canvas.bbox(ball) and canvas.bbox(power_up):
-        power_up_type = canvas.gettags(power_up)[0]
-        apply_power_up(power_up_type)
-
-    # Update power-up timer
-    if active_power_up:
-        power_up_timer -= 20  # Decrease timer
-        if power_up_timer <= 0:
-            deactivate_power_up()
-
-    # Update score display
+    # Update score
     canvas.itemconfig(score_display, text=f"{left_score} : {right_score}")
-
-
-# Function to limit the ball's speed
-def limit_ball_speed():
-    global ball_dx, ball_dy
-    max_speed = 10  # Define a maximum speed
-    ball_dx = max(-max_speed, min(max_speed, ball_dx))  # Clamp ball_dx to [-max_speed, max_speed]
-    ball_dy = max(-max_speed, min(max_speed, ball_dy))  # Clamp ball_dy to [-max_speed, max_speed]
-
 
 
 # Function to handle key presses
@@ -313,45 +229,35 @@ def start_screen():
     exit_button.pack(pady=10)
 
 
-# Modify the initialize_game function to start spawning power-ups
-def initialize_game(single_player_mode):
-    global left_score, right_score, ball_dx, ball_dy, is_single_player, power_up, active_power_up, power_up_timer
-
-    is_single_player = single_player_mode
+# Initialize game elements
+def initialize_game(single_player):
+    global left_paddle, right_paddle, ball, score_display, left_score, right_score, is_single_player, button_frame
+    is_single_player = single_player
     left_score = 0
     right_score = 0
-    ball_dx = 4
-    ball_dy = 4
-    power_up = None
-    active_power_up = None
-    power_up_timer = 0
 
-    canvas.delete("all")  # Clear the canvas
-    create_game_elements()  # Create paddles, ball, and score display
-    bind_keys()  # Bind keys for movement
-    spawn_power_up()  # Start spawning power-ups
+    # Destroy the button frame to remove buttons from the screen
+    if 'button_frame' in globals() and button_frame:
+        button_frame.destroy()
+
+    canvas.delete("all")
+    left_paddle = canvas.create_rectangle(20, HEIGHT // 2 - PADDLE_HEIGHT // 2,
+                                           20 + PADDLE_WIDTH, HEIGHT // 2 + PADDLE_HEIGHT // 2, fill="white")
+    right_paddle = canvas.create_rectangle(WIDTH - 20 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2,
+                                            WIDTH - 20, HEIGHT // 2 + PADDLE_HEIGHT // 2, fill="white")
+    ball = canvas.create_oval(WIDTH // 2 - BALL_SIZE // 2, HEIGHT // 2 - BALL_SIZE // 2,
+                               WIDTH // 2 + BALL_SIZE // 2, HEIGHT // 2 + BALL_SIZE // 2, fill="white")
+    score_display = canvas.create_text(WIDTH // 2, 20, text="0 : 0", fill="white", font=SCORE_FONT)
+    bind_keys()  # Ensure paddle movement keys are bound
     game_loop()
-
 
 # Main game loop
 def game_loop():
     move_paddles()
     move_ball()
     check_game_over()
-    root.after(20, game_loop)
-
-
-# Create paddles, ball, and score display
-def create_game_elements():
-    global left_paddle, right_paddle, ball, score_display
-    left_paddle = canvas.create_rectangle(50, HEIGHT // 2 - PADDLE_HEIGHT // 2,
-                                          50 + PADDLE_WIDTH, HEIGHT // 2 + PADDLE_HEIGHT // 2, fill="white")
-    right_paddle = canvas.create_rectangle(WIDTH - 50 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2,
-                                           WIDTH - 50, HEIGHT // 2 + PADDLE_HEIGHT // 2, fill="white")
-    ball = canvas.create_oval(WIDTH // 2 - BALL_SIZE // 2, HEIGHT // 2 - BALL_SIZE // 2,
-                               WIDTH // 2 + BALL_SIZE // 2, HEIGHT // 2 + BALL_SIZE // 2, fill="white")
-    score_display = canvas.create_text(WIDTH // 2, 30, text="0 : 0", fill="white", font=SCORE_FONT)
-
+    if left_score < 3 and right_score < 3:
+        root.after(16, game_loop)
 
 
 # Bind keys
