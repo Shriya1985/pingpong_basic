@@ -16,7 +16,7 @@ a Pong game built with Python and Tkinter. It supports single-player mode with a
 The AI automatically moves the right paddle in Single-player mode.
 # Installation
 1. Clone this repository:
-git clone https://github.com/Shriya1985/pong-ai-powerups.git
+git clone https://github.com/Shriya1985/pingpong_basic.git
 cd pong-ai-powerups
 2. Run the game:
 python pong.py
