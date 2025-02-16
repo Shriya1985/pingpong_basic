@@ -4,12 +4,12 @@ a Pong game built with Python and Tkinter. It supports single-player mode with a
 1. Single-player & Two-player modes: Play against AI or challenge a friend.
 2. AI-controlled Paddle: The AI automatically adjusts to the ball's movement.
 3. Power-ups System:
-🏓 Increase Paddle Size: Temporarily enlarges the paddle for better defense.
-🐢 Slow Ball: Reduces ball speed for easier control.
-🔥 Score Boost: Grants an instant point to the player who collects it.
-4. Dynamic Ball Speed: The ball speeds up after each paddle hit.
-5. Smooth Paddle Controls: Move with W/S keys for Player 1 and Up/Down for Player 2.
-6. End Screen & Retry Option: Restart the game after a win/loss.
+   1. 🏓 Increase Paddle Size: Temporarily enlarges the paddle for better defense.
+   2. 🐢 Slow Ball: Reduces ball speed for easier control.
+   3. 🔥 Score Boost: Grants an instant point to the player who collects it.
+5. Dynamic Ball Speed: The ball speeds up after each paddle hit.
+6. Smooth Paddle Controls: Move with W/S keys for Player 1 and Up/Down for Player 2.
+7. End Screen & Retry Option: Restart the game after a win/loss.
 # Controls
 1. Player 1 (Left Paddle): W (Up) | S (Down)
 2. Player 2 (Right Paddle - in Two-player mode): Up Arrow (Up) | Down Arrow (Down)
