@@ -21,3 +21,8 @@ cd pong-ai-powerups
 2. Run the game:
 python pong.py
 (Ensure Python and Tkinter are installed)
+# Requirements
+1. Python 3.x
+2. Tkinter (comes pre-installed with Python)
+# Contribution
+Feel free to fork this repository, enhance the code, and submit a pull request. Contributions and feedback are always appreciated!
